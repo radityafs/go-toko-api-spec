@@ -48,6 +48,6 @@ API Specification for GO-TOKO Application this document contains the API Specifi
 
     this endpoint is used to get top products or categories based on transaction
 
-### 8. [Create Transaction](api/transactions/create.md)
+### 8. [Create Transaction](api/transactions/create_transaction.md)
 
     this endpoint is used to create transaction
