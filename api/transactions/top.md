@@ -27,7 +27,7 @@ start_date : <date> [DD-MM-YYYY]
 end_date : <date> [DD-MM-YYYY]
 ```
 
-#### Response [200] - OK
+#### Response [200] - OK - Product
 
 ```json
 {
@@ -41,6 +41,29 @@ end_date : <date> [DD-MM-YYYY]
       "sold": 10
     }
     // Product Data
+  ],
+  "meta": {
+    "page": 1,
+    "limit": 10,
+    "totalData": 100,
+    "totalPage": 10
+  }
+}
+```
+
+#### Response [200] - OK - Category
+
+```json
+{
+  "success": true, // Boolean
+  "message": "Successfuly get top categories",
+  "data": [
+    {
+      "id": 1,
+      "name": "Category 1",
+      "sold": 10
+    }
+    // Category Data
   ],
   "meta": {
     "page": 1,
