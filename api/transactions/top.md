@@ -37,6 +37,7 @@ end_date : <date> [DD-MM-YYYY]
     {
       "id": 1,
       "name": "Product 1",
+      "picture": "http://localhost:8000/images/products/1.jpg",
       "sold": 10
     }
     // Product Data
