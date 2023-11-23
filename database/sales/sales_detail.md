@@ -13,6 +13,7 @@
 | product_id | bigint    | foreign key: `products.id`   |
 | name       | varchar   | not null                     |
 | quantity   | integer   | not null                     |
+| category   | varchar   | not null                     |
 | price      | bigint    | not null                     |
 | total      | bigint    | not null                     |
 | created_at | timestamp |                              |
