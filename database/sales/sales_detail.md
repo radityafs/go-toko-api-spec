@@ -2,7 +2,9 @@
 
         Sales Detail table is used to store the sales data detail.
 
-#### Table `sales_detail`
+#### Table name : `sales_detail`
+
+#### Table Column :
 
 | Column     | Type      | Modifiers                    |
 | ---------- | --------- | ---------------------------- |

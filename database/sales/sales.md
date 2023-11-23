@@ -2,7 +2,9 @@
 
         Sales table is used to store the sales data.
 
-#### Table `sales`
+#### Table name : `sales`
+
+#### Table Column :
 
 | Column       | Type      | Modifiers                      |
 | ------------ | --------- | ------------------------------ |

@@ -2,7 +2,9 @@
 
     This table is used to store the payment from 3rd party payment gateway.
 
-#### Table `sales_payment`
+#### Table name : `sales_payment`
+
+#### Table Column:
 
 | Column       | Type          | Modifiers                      |
 | ------------ | ------------- | ------------------------------ |

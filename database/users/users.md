@@ -2,7 +2,9 @@
 
     user table is used to store the user data.
 
-#### Table: `users`
+#### Table name : `users`
+
+#### Table Column :
 
 | Column            | Type         | Modifiers                    |
 | ----------------- | ------------ | ---------------------------- |

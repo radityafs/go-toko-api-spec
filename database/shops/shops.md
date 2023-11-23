@@ -2,7 +2,9 @@
 
     shops table is used to store the shop data.
 
-#### table: `shops`
+#### table name : `shops`
+
+#### table column :
 
 | Column      | Type          | Modifiers                    |
 | ----------- | ------------- | ---------------------------- |

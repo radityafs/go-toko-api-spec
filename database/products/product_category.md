@@ -2,7 +2,9 @@
 
     product category table is used to store the product category data.
 
-#### Table `product_category`
+#### Table name : `product_category`
+
+#### Table Column :
 
 | Column      | Type          | Modifiers                    |
 | ----------- | ------------- | ---------------------------- |

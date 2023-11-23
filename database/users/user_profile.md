@@ -2,7 +2,9 @@
 
     user_profile table is used to store the user profile data.
 
-#### Table: `user_profile`
+#### Table name : `user_profile`
+
+#### Table Column :
 
 | Column     | Type         | Modifiers                    |
 | ---------- | ------------ | ---------------------------- |

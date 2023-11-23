@@ -2,7 +2,9 @@
 
     products table is used to store the product data.
 
-#### Table: `products`
+#### Table name : `products`
+
+#### Table Column :
 
 | Column      | Type         | Modifiers                              |
 | ----------- | ------------ | -------------------------------------- |

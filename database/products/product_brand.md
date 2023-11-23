@@ -2,7 +2,9 @@
 
     product brand table is used to store the product brand data.
 
-#### Table `product_brand`
+#### Table name : `product_brand`
+
+#### Table Column :
 
 | Column      | Type          | Modifiers                    |
 | ----------- | ------------- | ---------------------------- |
