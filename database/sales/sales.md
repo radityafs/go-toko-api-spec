@@ -14,7 +14,7 @@
 | cashier_id   | bigint    | foreign key: `users.id`        |
 | status       | enum      | enum: `unpaid`, `paid`, `void` |
 | payment_type | enum      | enum: `cash`, `qris`           |
-| total_price  | bigint    |                                |
+| total_bill   | bigint    |                                |
 | total_paid   | bigint    |                                |
 | total_item   | integer   |                                |
 | created_at   | timestamp |                                |
