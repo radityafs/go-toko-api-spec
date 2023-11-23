@@ -68,7 +68,7 @@ Authorization : Bearer <token>
     "id": 1,
     "invoice": "INV-20210901-0001",
     "payment_method": "QRIS", // [CASH, QRIS]
-    "qris_id": "qris-1234567890",
+    "payment_ref": "000", // QRIS Reference
     "status": "UNPAID", // [PAID, UNPAID, VOID]
     "total": 100000,
     "total_payment": 100000,
