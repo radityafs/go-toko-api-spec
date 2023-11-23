@@ -14,5 +14,6 @@
 | name       | varchar   | not null                     |
 | quantity   | integer   | not null                     |
 | price      | bigint    | not null                     |
+| total      | bigint    | not null                     |
 | created_at | timestamp |                              |
 | updated_at | timestamp |                              |
