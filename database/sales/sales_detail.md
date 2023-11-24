@@ -11,6 +11,7 @@
 | id         | integer   | not null default primary key |
 | sales_id   | bigint    | foreign key: `sales.id`      |
 | product_id | bigint    | foreign key: `products.id`   |
+| shop_id    | bigint    | foreign key: `shops.id`      |
 | name       | varchar   | not null                     |
 | quantity   | integer   | not null                     |
 | category   | varchar   | not null                     |
