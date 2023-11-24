@@ -1,0 +1,45 @@
+version: "3.7"
+services:
+  db:
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: K2QW6MIszwAEI8M
+      MYSQL_DATABASE: go_toko
+      MYSQL_USER: go_toko
+      MYSQL_PASSWORD: FuxvCLKukbXrS8Q
+    ports:
+      - "3306:3306"
+    volumes:
+      - database:/var/lib/mysql
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: go_toko
+    container_name: go_toko
+    restart: always
+    environment:
+      - DB_HOST=db
+      - DB_USERNAME=go_toko
+      - DB_PASSWORD=FuxvCLKukbXrS8Q
+      - DB_DATABASE=go_toko
+      - DB_PORT=3306
+      - PORT=80
+    ports:
+      - "80:80"
+    depends_on:
+      - db
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    restart: always
+    environment:
+      PMA_HOST: db
+      PMA_USER: go_toko
+      PMA_PASSWORD: FuxvCLKukbXrS8Q
+    ports:
+      - "8080:80"
+volumes:
+  database:
