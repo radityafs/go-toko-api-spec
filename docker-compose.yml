@@ -37,8 +37,6 @@ services:
     restart: always
     environment:
       PMA_HOST: db
-      PMA_USER: go_toko
-      PMA_PASSWORD: FuxvCLKukbXrS8Q
     ports:
       - "8080:80"
 volumes:
