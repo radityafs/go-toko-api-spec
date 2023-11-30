@@ -13,7 +13,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Stop Docker Compose
-        run: docker-compose down --rmi local
+        run: docker-compose down -v --rmi local
 
       - name: Run Docker Compose
         run: docker-compose up -d
