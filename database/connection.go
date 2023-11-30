@@ -20,16 +20,10 @@ func Init() {
 	var port = os.Getenv("DB_PORT")
 	var database = os.Getenv("DB_DATABASE")
 
-	if(username == "" || password == "" || host == "" || port == "" || database == "") {
-		panic("Database connection failed")
-	}
-
-	var MYSQL = username + ":" + password + "@tcp(" + host + ":" + port + ")" + "/" + database + "?charset=utf8mb4&parseTime=True&loc=Local"
-
-	dsn := MYSQL
+	dsn := username + ":" + password + "@tcp(" + host + ":" + port + ")" + "/" + database + "?charset=utf8mb4&parseTime=True&loc=Local"
 
 	DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Info),
+		Logger: logger.Default.LogMode(logger.Silent),
 	})
 
 	if err != nil {

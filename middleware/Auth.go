@@ -50,7 +50,7 @@ func Auth(c *fiber.Ctx) error {
 	}
 
 	c.Locals("user_id", claims["user_id"])
-	c.Locals("toko_id", claims["toko_id"])
+	c.Locals("shop_id", claims["shop_id"])
 	c.Locals("role", claims["role"])
 
 	return c.Next()

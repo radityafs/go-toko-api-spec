@@ -6,13 +6,17 @@ import (
 )
 
 func Migrate() {
+
 	err := DB.AutoMigrate(
-		entity.Toko{},
-		entity.User{},
-		entity.Kategori{},
-		entity.Produk{},
-		entity.Penjualan{},
-		entity.DetailPenjualan{},
+		&entity.User{},
+		&entity.UserRole{},
+		&entity.Shops{},
+		&entity.ProductsBrand{},
+		&entity.ProductsCategory{},
+		&entity.Product{},
+		&entity.Sales{},
+		&entity.SalesDetail{},
+		&entity.SalesPayment{},
 	)
 
 	if err != nil {

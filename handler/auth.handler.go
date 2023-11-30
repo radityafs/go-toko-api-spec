@@ -34,12 +34,11 @@ func Login(ctx *fiber.Ctx) error {
 	}
 
 	var user entity.User
-	if err := database.DB.
-		Preload("Toko").
-		First(&user, "email = ?", loginRequest.Email).Error; err != nil {
+
+	if err := database.DB.Preload("Role").Preload("Shop").First(&user, "email = ?", loginRequest.Email).Error; err != nil {
 		return ctx.Status(400).JSON(fiber.Map{
 			"success": false,
-			"message": "User dengan email yang diberikan tidak ditemukan",
+			"message": "Email tidak ditemukan",
 			"data":    nil,
 		})
 	}
@@ -52,33 +51,29 @@ func Login(ctx *fiber.Ctx) error {
 		})
 	}
 
-	// TODO: Generate JWT Token
+	if user.Role.Name != "Cashier" {
+		return ctx.Status(400).JSON(fiber.Map{
+			"success": false,
+			"message": "Hanya kasir yang diizinkan, silahkan login melalui web",
+			"data":    user,
+	})}
+	
+
 	claims := jwt.MapClaims{}
 	claims["user_id"] = user.ID
-	claims["toko_id"] = user.TokoID
-	claims["email"] = user.Email
-	claims["role"] = user.Role
+	claims["shop_id"] = user.Shop.ID
 	claims["exp"] = time.Now().Add(time.Hour * 24).Unix() // 1 day
 
 	refreshClaims := jwt.MapClaims{}
 	refreshClaims["user_id"] = user.ID
-	refreshClaims["email"] = user.Email
+	refreshClaims["shop_id"] = user.Shop.ID
 	refreshClaims["exp"] = time.Now().Add(time.Hour * 24 * 7).Unix() // 7 days
 
 	token, err := utils.GenerateToken(&claims)
 	refreshToken, errRefresh := utils.GenerateToken(&refreshClaims)
 
-	if err != nil {
+	if err != nil || errRefresh != nil {
 		fmt.Println(err)
-		return ctx.Status(500).JSON(fiber.Map{
-			"success": false,
-			"message": "Internal server error",
-			"data":    nil,
-		})
-	}
-
-	if errRefresh != nil {
-		fmt.Println(errRefresh)
 		return ctx.Status(500).JSON(fiber.Map{
 			"success": false,
 			"message": "Internal server error",
@@ -97,7 +92,6 @@ func Login(ctx *fiber.Ctx) error {
 
 func RefreshToken(ctx *fiber.Ctx) error {
 	var token request.RefreshToken
-	var user entity.User
 
 	if err := ctx.BodyParser(&token); err != nil {
 		return ctx.Status(400).JSON(fiber.Map{
@@ -117,8 +111,7 @@ func RefreshToken(ctx *fiber.Ctx) error {
 		})
 	}
 
-	now := time.Now().Unix()
-	if claims["exp"] == nil || int64(claims["exp"].(float64)) < now {
+	if claims["exp"] == nil || int64(claims["exp"].(float64)) < time.Now().Unix() {
 		return ctx.Status(400).JSON(fiber.Map{
 			"success": false,
 			"message": "Token expired",
@@ -126,27 +119,9 @@ func RefreshToken(ctx *fiber.Ctx) error {
 		})
 	}
 
-	if claims["user_id"] == nil {
-		return ctx.Status(400).JSON(fiber.Map{
-			"success": false,
-			"message": "Token tidak valid",
-			"data":    nil,
-		})
-	}
-
-	if err := database.DB.First(&user, "id = ?", claims["user_id"]).Error; err != nil {
-		return ctx.Status(400).JSON(fiber.Map{
-			"success": false,
-			"message": "User tidak ditemukan",
-			"data":    nil,
-		})
-	}
-
 	newClaims := jwt.MapClaims{}
-	newClaims["user_id"] = user.ID
-	newClaims["toko_id"] = user.TokoID
-	newClaims["email"] = user.Email
-	newClaims["role"] = user.Role
+	newClaims["user_id"] = claims["user_id"]
+	newClaims["shop_id"] = claims["shop_id"]
 	newClaims["exp"] = time.Now().Add(time.Hour * 24).Unix() // 1 day
 
 	newToken, err := utils.GenerateToken(&newClaims)
