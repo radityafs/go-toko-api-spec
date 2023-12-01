@@ -7,21 +7,6 @@ const (
 )
 
 
-// | Column     | Type         | Modifiers                    |
-// | ---------- | ------------ | ---------------------------- |
-// | id         | integer      | not null default primary key |
-// | user_id    | integer      | foreign key: `users.id`      |
-// | picture    | varchar(255) | nullable                     |
-// | phone      | varchar(255) | nullable                     |
-// | first_name | varchar(255) |                              |
-// | last_name  | varchar(255) |                              |
-// | nickname   | varchar(255) | nullable                     |
-// | gender     | enum         | enum: `male`, `female`       |
-// | birthdate  | date         | nullable                     |
-// | address    | varchar(255) | nullable                     |
-// | created_at | timestamp    | nullable                     |
-// | updated_at | timestamp    | nullable                     |
-
 type UserProfile struct {
 	ID        uint64 `gorm:"primaryKey;autoIncrement;not null" json:"id"`
 	User      User   `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"user"`
@@ -35,4 +20,8 @@ type UserProfile struct {
 	Birthdate string `gorm:"default:null" json:"birthdate"`
 	Address   string `gorm:"default:null" json:"address"`
 	Timestamp
+}
+
+func (UserProfile) TableName() string {
+	return "users_profile"
 }

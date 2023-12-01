@@ -2,7 +2,6 @@ package response
 
 import "go-toko/model/entity"
 
-
 type Transaction struct {
 	Status int `json:"-"`
 	Success bool `json:"success"`
@@ -11,7 +10,7 @@ type Transaction struct {
 }
 
 type DetailTransaction struct {
-	Id int `gorm:"column:id" json:"id"`
+	Id uint64 `gorm:"column:id" json:"id"`
 	Invoice string `gorm:"column:order_id" json:"invoice"`
 	PaymentMethod string `gorm:"column:payment_type" json:"payment_method"`
 	PaymentStatus entity.PaymentStatus `gorm:"column:status" json:"status"`
@@ -24,7 +23,7 @@ type DetailTransaction struct {
 }
 
 type DetailProduct struct {
-	Id int `gorm:"column:id" json:"id"`
+	Id uint64 `gorm:"column:id" json:"id"`
 	Name string `gorm:"column:name" json:"name"`
 	Price int `gorm:"column:price" json:"price"`
 	Quantity int `gorm:"column:quantity" json:"quantity"`

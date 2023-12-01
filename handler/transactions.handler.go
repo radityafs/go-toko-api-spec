@@ -1,12 +1,16 @@
 package handler
 
 import (
+	"errors"
 	"go-toko/database"
 	"go-toko/model/entity"
+	"go-toko/model/request"
 	"go-toko/model/response"
 	"strconv"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 
@@ -114,6 +118,8 @@ func GetTransactionsByShop(ctx *fiber.Ctx) error {
 		response.Status = 404
 		response.Message = "Data tidak ditemukan"
 		response.Success = false
+
+		response.Data = nil
 	}else{
 		response.Pagination.CurrentPage = int64(pageInt)
 		response.Pagination.PerPage = int64(limitInt)
@@ -146,4 +152,126 @@ func GetDetailTransactionByShop(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.Status(response.Status).JSON(response)
+}
+
+func PostCreateTransaction(ctx *fiber.Ctx) error {
+	var shop_id = ctx.Locals("shop_id")
+	var cashier_id = ctx.Locals("user_id")
+	var request request.Sales
+	var Transaction response.CreateTransaction
+
+
+	// float to uint64
+	shopId := uint64(shop_id.(float64))
+	cashierId := uint64(cashier_id.(float64))
+
+	if err := ctx.BodyParser(&request); err != nil {
+		return ctx.Status(400).JSON(fiber.Map{
+			"success": false,
+			"message": "Invalid request body",
+			"data":    nil,
+		})
+	}
+
+	trx := database.DB.Transaction(func(tx *gorm.DB) error {
+		tx.Begin()
+
+		var sales entity.Sales
+		var orderId = uuid.New().String()
+
+		sales.OrderID = orderId
+		sales.ShopID = shopId
+		sales.CashierID = cashierId
+		sales.PaymentType = request.PaymentType
+
+		err := tx.Create(&sales).Error;
+		if(err != nil) {
+			tx.Rollback()
+			return err
+		}
+
+		Transaction.Data.Id = sales.ID
+		Transaction.Data.Invoice = orderId
+
+		for _, product := range request.Product{
+			var productData entity.Product
+			var salesDetail entity.SalesDetail
+
+			database.DB.Preload("ProductsCategory").Find(&productData, "id = ?", product.ID)
+
+			if(productData.ID == 0) {
+				tx.Rollback()
+				return errors.New("product not found")
+			}
+
+			if(productData.Quantity < product.Quantity) {
+				tx.Rollback()
+				return errors.New("product quantity not enough")
+			}
+
+			Transaction.Data.Product = append(Transaction.Data.Product, response.DetailProduct{
+				Id: productData.ID,
+				Name: productData.Name,
+				Price: productData.PriceSell,
+				Quantity: product.Quantity,
+				Total: product.Quantity * productData.PriceSell,
+			})
+
+			Transaction.Data.TotalPayment += product.Quantity * productData.PriceSell
+
+			// update product quantity
+			productData.Quantity = productData.Quantity - product.Quantity
+			tx.Save(&productData)
+
+			// create sales detail
+			salesDetail.SalesID = sales.ID
+			salesDetail.ProductID = productData.ID
+			salesDetail.ShopID = shopId
+			salesDetail.Name = productData.Name
+			salesDetail.Quantity = product.Quantity
+			salesDetail.Category = productData.ProductsCategory.Name
+			salesDetail.Price = productData.PriceSell
+			salesDetail.Total = product.Quantity * productData.PriceSell
+
+			tx.Create(&salesDetail)
+		}
+
+		if(sales.PaymentType == entity.Cash) {
+			sales.Status = entity.Paid
+		}else{
+			sales.Status = entity.Unpaid
+			Transaction.Data.PaymentRef = uuid.New().String()
+		}
+
+		if(sales.TotalPaid < sales.TotalBill) {
+			tx.Rollback()
+			return errors.New("total payment less than total bill")
+		}
+
+		Transaction.Data.Change = request.TotalPayment - sales.TotalBill
+		Transaction.Data.PaymentMethod = string(sales.PaymentType)
+		Transaction.Data.PaymentStatus = string(sales.Status)
+		Transaction.Data.Total = Transaction.Data.TotalPayment
+
+		sales.TotalPaid = request.TotalPayment
+		sales.TotalItem = len(request.Product)
+		sales.TotalBill = Transaction.Data.TotalPayment
+
+		tx.Save(&sales)
+
+		return nil
+	})
+
+	if(trx != nil) {
+		return ctx.Status(400).JSON(fiber.Map{
+			"success": false,
+			"message": trx.Error(),
+			"data":    nil,
+		})
+	}
+
+	Transaction.Status = 200
+	Transaction.Success = true
+	Transaction.Message = "Berhasil membuat transaksi"
+	return ctx.Status(Transaction.Status).JSON(Transaction)
 }

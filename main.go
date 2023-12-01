@@ -11,7 +11,6 @@ import (
 func main() {
 	// INIT DATABASE
 	database.Init()
-	database.Migrate()
 
 	// INIT FIBER
 	app := fiber.New()
