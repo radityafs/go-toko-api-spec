@@ -9,6 +9,13 @@ import (
 )
 
 func Init(r *fiber.App) {
+
+	r.Get("/", func(ctx *fiber.Ctx) error {
+		return ctx.JSON(fiber.Map{
+			"message": "Welcome to Go-Toko API",
+		})
+	})
+
 	api := r.Group("/api")
 	v1 := api.Group("/v1")
 
