@@ -221,7 +221,12 @@ func PostCreateTransaction(ctx *fiber.Ctx) error {
 
 			// update product quantity
 			productData.Quantity = productData.Quantity - product.Quantity
-			tx.Save(&productData)
+			err := tx.Save(&productData).Error
+			
+			if(err != nil) {
+				tx.Rollback()
+				return err
+			}
 
 			// create sales detail
 			salesDetail.SalesID = sales.ID
@@ -233,7 +238,12 @@ func PostCreateTransaction(ctx *fiber.Ctx) error {
 			salesDetail.Price = productData.PriceSell
 			salesDetail.Total = product.Quantity * productData.PriceSell
 
-			tx.Create(&salesDetail)
+			errs := tx.Create(&salesDetail).Error
+
+			if(errs != nil) {
+				tx.Rollback()
+				return errs
+			}
 		}
 
 		if(sales.PaymentType == entity.Cash) {
@@ -257,7 +267,12 @@ func PostCreateTransaction(ctx *fiber.Ctx) error {
 		sales.TotalItem = len(request.Product)
 		sales.TotalBill = Transaction.Data.TotalPayment
 
-		tx.Save(&sales)
+		errSave := tx.Save(&sales).Error
+
+		if(errSave != nil) {
+			tx.Rollback()
+			return errSave
+		}
 
 		return nil
 	})

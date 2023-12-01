@@ -20,12 +20,6 @@ func Init() {
 	var port = os.Getenv("DB_PORT")
 	var database = os.Getenv("DB_DATABASE")
 
-	username = "root"
-	password = "K2QW6MIszwAEI8M"
-	host = "165.22.104.10"
-	port = "3306"
-	database = "go_toko"
-
 	dsn := username + ":" + password + "@tcp(" + host + ":" + port + ")" + "/" + database + "?charset=utf8mb4&parseTime=True&loc=Local"
 
 	DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{
