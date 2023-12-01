@@ -19,4 +19,4 @@ jobs:
       - name: Run Docker Compose
         run: |
           docker-compose up -d --build
-          docker-compose logs -f
+          docker-compose logs
