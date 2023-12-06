@@ -54,7 +54,11 @@ func GetProductsShop(ctx *fiber.Ctx) error {
 	
 	tx.Count(&response.Pagination.TotalData)
 
-	if(id_category != "") { tx.Find(&entity.Product{}, "id_category = ?", id_category).Count(&response.Pagination.TotalData) }
+	if(id_category != "") { 
+		tx.Where(&entity.Product{}, "id_category = ?", id_category)
+		tx.Count(&response.Pagination.TotalData)
+	}
+
 	if(sortBy != "" && sort != "") { tx.Order(fmt.Sprintf("%s %s", sortBy, sort)) }
 	tx.Limit(limitInt).Offset((pageInt-1)*limitInt).Find(&response.Data)
 

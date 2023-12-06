@@ -4,7 +4,6 @@ import (
 	"go-toko/database"
 	"go-toko/model/entity"
 	"go-toko/model/response"
-	"math"
 	"strconv"
 
 	"github.com/gofiber/fiber/v2"
@@ -29,17 +28,9 @@ func GetProductCategoriesShop(ctx *fiber.Ctx) error {
 	var response response.Categories
 
 	// Query
-	tx := database.DB.Model(&entity.ProductsCategory{}).Where("shop_id = ?", ctx.Locals("shop_id"))
+	database.DB.Model(&entity.ProductsCategory{}).Where("shop_id = ?", ctx.Locals("shop_id")).Scan(&response.Data)
 
-	tx.Count(&response.Pagination.TotalData)
-	tx.Limit(limitInt).Offset((pageInt-1)*limitInt).Scan(&response.Data)
-
-	// Pagination
-	response.Pagination.CurrentPage = int64(pageInt)
-	response.Pagination.TotalPage = int64(math.Ceil(float64(response.Pagination.TotalData) / float64(limitInt)))
-	response.Pagination.PerPage = int64(limitInt)
-
-	if(response.Pagination.TotalData == 0) {
+	if(len(response.Data) == 0){
 		response.Status = 404
 		response.Message = "Data tidak ditemukan"
 	}else{
