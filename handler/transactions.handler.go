@@ -109,10 +109,9 @@ func GetTransactionsByShop(ctx *fiber.Ctx) error {
 	tx := database.DB.Model(&entity.Sales{}).
 	Where("created_at BETWEEN ? AND ?", start_date, end_date).
 	Where("shop_id = ?", ctx.Locals("shop_id"))
-	
-	tx.Count(&response.Pagination.TotalData)
-	tx.Select("COUNT(*) as total_sales, SUM(total_bill) as total_revenue")
 	tx.Limit(limitInt).Offset((pageInt-1)*limitInt).Scan(&response.Data)
+	tx.Count(&response.Pagination.TotalData)
+	tx.Select("COUNT(*) as total_sales, SUM(total_bill) as total_revenue").Scan(&response.Summary)
 
 	if(response.Pagination.TotalData == 0) {
 		response.Status = 404
