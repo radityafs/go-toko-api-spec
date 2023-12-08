@@ -2,6 +2,7 @@ package handler
 
 import (
 	"errors"
+	"fmt"
 	"go-toko/database"
 	"go-toko/model/entity"
 	"go-toko/model/request"
@@ -42,18 +43,13 @@ func GetTopTransactionByShop(ctx *fiber.Ctx) error {
 		response.Success = false
 		return ctx.Status(response.Status).JSON(response)
 	}
-	
-
-	if(start_date == "" && end_date == "") {
-		response.Status = 400
-		response.Message = "Query start_date dan end_date harus diisi"
-		response.Success = false
-		return ctx.Status(response.Status).JSON(response)
-	}
 
 	tx := database.DB.Model(&entity.SalesDetail{}).
-	Where("shop_id = ?", ctx.Locals("shop_id")).
-	Where("created_at BETWEEN ? AND ?", start_date, end_date)
+	Where("shop_id = ?", ctx.Locals("shop_id"))
+
+	if(start_date != "" && end_date != "") {
+		tx.Where("created_at BETWEEN ? AND ?", fmt.Sprintf("%s 00:00:00", start_date), fmt.Sprintf("%s 23:59:59", end_date))
+	}
 
 	tx.Count(&response.Pagination.TotalData)
 
@@ -62,7 +58,7 @@ func GetTopTransactionByShop(ctx *fiber.Ctx) error {
 	Order("total_sales desc").
 	Limit(limitInt).
 	Offset((pageInt-1)*limitInt).
-	Scan(&response)
+	Scan(&response.Data)
 
 	response.Pagination.CurrentPage = int64(pageInt)
 	if(response.Pagination.TotalData == 0) {
@@ -107,7 +103,7 @@ func GetTransactionsByShop(ctx *fiber.Ctx) error {
 
 
 	tx := database.DB.Model(&entity.Sales{}).
-	Where("created_at BETWEEN ? 00:00:00 AND ? 23:59:59", start_date, end_date).
+	Where("created_at BETWEEN ? AND ?", fmt.Sprintf("%s 00:00:00", start_date), fmt.Sprintf("%s 23:59:59", end_date)).
 	Where("shop_id = ?", ctx.Locals("shop_id"))
 	tx.Limit(limitInt).Offset((pageInt-1)*limitInt).Scan(&response.Data)
 	tx.Count(&response.Pagination.TotalData)
