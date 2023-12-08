@@ -107,7 +107,7 @@ func GetTransactionsByShop(ctx *fiber.Ctx) error {
 
 
 	tx := database.DB.Model(&entity.Sales{}).
-	Where("created_at BETWEEN ? AND ?", start_date, end_date).
+	Where("created_at BETWEEN ? 00:00:00 AND ? 23:59:59", start_date, end_date).
 	Where("shop_id = ?", ctx.Locals("shop_id"))
 	tx.Limit(limitInt).Offset((pageInt-1)*limitInt).Scan(&response.Data)
 	tx.Count(&response.Pagination.TotalData)
