@@ -50,12 +50,15 @@ func GetTopTransactionByShop(ctx *fiber.Ctx) error {
 		tx.Where("created_at BETWEEN ? AND ?", fmt.Sprintf("%s 00:00:00", start_date), fmt.Sprintf("%s 23:59:59", end_date))
 	}
 
-	tx.Count(&response.Pagination.TotalData)
 
 	if(typeBy == "category") {
+		// count unique category
+		tx.Distinct("category").Count(&response.Pagination.TotalData)
 		tx.Group("category").
 		Select("SUM(quantity) as total_sales, SUM(total) as total_revenue, category as name")
 	}else{
+		// count unique product
+		tx.Distinct("name").Count(&response.Pagination.TotalData)
 		tx.Group("name").Group("images").
 		Select("SUM(quantity) as total_sales, SUM(total) as total_revenue, name, images")
 	}
