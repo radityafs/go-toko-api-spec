@@ -55,7 +55,7 @@ func GetProductsShop(ctx *fiber.Ctx) error {
 	tx.Count(&response.Pagination.TotalData)
 
 	if(id_category != "") { 
-		tx.Where(&entity.Product{}, "id_category = ?", id_category)
+		tx.Where(&entity.Product{}, "category_id = ?", id_category)
 		tx.Count(&response.Pagination.TotalData)
 	}
 

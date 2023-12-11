@@ -12,6 +12,7 @@ type SalesDetail struct {
 	ShopID    uint64 `gorm:"not null" json:"shop_id"`
 
 	Name      string `gorm:"not null" json:"name"`
+	Images	string `gorm:"not null" json:"images"`
 	Quantity  int    `gorm:"not null" json:"quantity"`
 	Category  string `gorm:"not null" json:"category"`
 	Price     int    `gorm:"not null" json:"price"`

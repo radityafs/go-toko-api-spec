@@ -20,14 +20,13 @@ func GetTopTransactionByShop(ctx *fiber.Ctx) error {
 	limit := ctx.Query("limit", "10")
 	typeBy := ctx.Query("type", "category")
 
-	start_date := ctx.Query("start_date", "2023-11-20")
-	end_date := ctx.Query("end_date", "2023-11-29")
+	start_date := ctx.Query("start_date", "")
+	end_date := ctx.Query("end_date", "")
 
 	pageInt, errPageInt := strconv.Atoi(page)
 	limitInt, errLimitInt := strconv.Atoi(limit)
 
 	var response response.Analytics
-
 
 	if errPageInt != nil || errLimitInt != nil || pageInt < 1 || limitInt < 1 {	
 		response.Status = 400
@@ -53,12 +52,17 @@ func GetTopTransactionByShop(ctx *fiber.Ctx) error {
 
 	tx.Count(&response.Pagination.TotalData)
 
-	tx.Group(typeBy).
-	Select("SUM(quantity) as total_sales, SUM(total) as total_revenue, "+typeBy+" as name").
-	Order("total_sales desc").
+	if(typeBy == "category") {
+		tx.Group("category").
+		Select("SUM(quantity) as total_sales, SUM(total) as total_revenue, category as name")
+	}else{
+		tx.Group("name").Group("images").
+		Select("SUM(quantity) as total_sales, SUM(total) as total_revenue, name, images")
+	}
+
+	tx.Order("total_sales desc").
 	Limit(limitInt).
-	Offset((pageInt-1)*limitInt).
-	Scan(&response.Data)
+	Offset((pageInt-1)*limitInt).Scan(&response.Data)
 
 	response.Pagination.CurrentPage = int64(pageInt)
 	if(response.Pagination.TotalData == 0) {
@@ -71,7 +75,7 @@ func GetTopTransactionByShop(ctx *fiber.Ctx) error {
 		response.Message = "Berhasil mengambil data transaksi"
 	}
 
-	return ctx.Status(response.Status).JSON(response)
+	return ctx.Status(200).JSON(response)
 }
 
 func GetTransactionsByShop(ctx *fiber.Ctx) error {
@@ -229,6 +233,7 @@ func PostCreateTransaction(ctx *fiber.Ctx) error {
 			salesDetail.ShopID = shopId
 			salesDetail.Name = productData.Name
 			salesDetail.Quantity = product.Quantity
+			salesDetail.Images = productData.Images
 			salesDetail.Category = productData.ProductsCategory.Name
 			salesDetail.Price = productData.PriceSell
 			salesDetail.Total = product.Quantity * productData.PriceSell

@@ -5,7 +5,6 @@ import (
 	"go-toko/database"
 	"go-toko/model/entity"
 	"go-toko/model/request"
-	"go-toko/model/response"
 	"go-toko/utils"
 	"time"
 
@@ -35,9 +34,8 @@ func Login(ctx *fiber.Ctx) error {
 	}
 
 	var user entity.User
-	var profile response.UserProfile
 
-	if err := database.DB.Preload("Role").Preload("Shop").First(&user, "email = ?", loginRequest.Email).Error; err != nil {
+	if err := database.DB.Model(&entity.User{}).Preload("UserProfile").Preload("Role").Preload("Shop").Find(&user, "email = ?", loginRequest.Email).Error; err != nil {
 		return ctx.Status(400).JSON(fiber.Map{
 			"success": false,
 			"message": "Email tidak ditemukan",
@@ -86,7 +84,6 @@ func Login(ctx *fiber.Ctx) error {
 		"success":      true,
 		"message":      "Successfuly logged in",
 		"data":         user,
-		"profile":      profile,
 		"token":        token,
 		"refreshToken": refreshToken,
 	})

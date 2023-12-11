@@ -17,6 +17,8 @@ type User struct {
 	Shop			 Shops `gorm:"foreignKey:ShopID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"shop"`
 	ShopID           uint64 `gorm:"default:null" json:"-"`
 
+	UserProfile	  UserProfileResponse `json:"user_profile"`
+
 	GoogleID         string `gorm:"default:null" json:"-"`
 	Timestamp
 }
