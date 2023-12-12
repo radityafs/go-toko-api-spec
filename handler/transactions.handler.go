@@ -110,9 +110,9 @@ func GetTransactionsByShop(ctx *fiber.Ctx) error {
 		txSummary.Where("created_at BETWEEN ? AND ?", fmt.Sprintf("%s 00:00:00", start_date), fmt.Sprintf("%s 23:59:59", end_date))
 		txCount.Where("created_at BETWEEN ? AND ?", fmt.Sprintf("%s 00:00:00", start_date), fmt.Sprintf("%s 23:59:59", end_date))
 	}
-	
+
 	txCount.Count(&response.Pagination.TotalData)
-	tx.Limit(limitInt).Offset((pageInt-1)*limitInt).Scan(&response.Data)
+	tx.Limit(limitInt).Offset((pageInt-1)*limitInt).Order("created_at desc").Scan(&response.Data)
 	txSummary.Select("COUNT(*) as total_sales, SUM(total_bill) as total_revenue").Scan(&response.Summary)
 
 	if(response.Pagination.TotalData == 0) {
