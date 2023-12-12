@@ -85,8 +85,8 @@ func GetTransactionsByShop(ctx *fiber.Ctx) error {
 	page:= ctx.Query("page", "1")
 	limit := ctx.Query("limit", "10")
 
-	start_date := ctx.Query("start_date", "2023-11-20")
-	end_date := ctx.Query("end_date", "2023-11-29")
+	start_date := ctx.Query("start_date", "")
+	end_date := ctx.Query("end_date", "")
 
 	pageInt, errPageInt := strconv.Atoi(page)
 	limitInt, errLimitInt := strconv.Atoi(limit)
@@ -101,20 +101,19 @@ func GetTransactionsByShop(ctx *fiber.Ctx) error {
 		return ctx.Status(response.Status).JSON(response)
 	}
 
-	if(start_date == "" && end_date == "") {
-		response.Status = 400
-		response.Message = "Query start_date dan end_date harus diisi"
-		response.Success = false
-		return ctx.Status(response.Status).JSON(response)
+	txCount := database.DB.Model(&entity.Sales{}).Where("shop_id = ?", ctx.Locals("shop_id"))
+	txSummary := database.DB.Model(&entity.Sales{}).Where("shop_id = ?", ctx.Locals("shop_id"))
+	tx := database.DB.Model(&entity.Sales{}).Where("shop_id = ?", ctx.Locals("shop_id"))
+	
+	if(start_date != "" && end_date != "") {
+		tx.Where("created_at BETWEEN ? AND ?", fmt.Sprintf("%s 00:00:00", start_date), fmt.Sprintf("%s 23:59:59", end_date))
+		txSummary.Where("created_at BETWEEN ? AND ?", fmt.Sprintf("%s 00:00:00", start_date), fmt.Sprintf("%s 23:59:59", end_date))
+		txCount.Where("created_at BETWEEN ? AND ?", fmt.Sprintf("%s 00:00:00", start_date), fmt.Sprintf("%s 23:59:59", end_date))
 	}
-
-
-	tx := database.DB.Model(&entity.Sales{}).
-	Where("created_at BETWEEN ? AND ?", fmt.Sprintf("%s 00:00:00", start_date), fmt.Sprintf("%s 23:59:59", end_date)).
-	Where("shop_id = ?", ctx.Locals("shop_id"))
+	
+	txCount.Count(&response.Pagination.TotalData)
 	tx.Limit(limitInt).Offset((pageInt-1)*limitInt).Scan(&response.Data)
-	tx.Count(&response.Pagination.TotalData)
-	tx.Select("COUNT(*) as total_sales, SUM(total_bill) as total_revenue").Scan(&response.Summary)
+	txSummary.Select("COUNT(*) as total_sales, SUM(total_bill) as total_revenue").Scan(&response.Summary)
 
 	if(response.Pagination.TotalData == 0) {
 		response.Status = 404
