@@ -15,6 +15,7 @@ func GetProductsShop(ctx *fiber.Ctx) error {
 	page:= ctx.Query("page", "1")
 	limit := ctx.Query("limit", "10")
 	id_category := ctx.Query("id_category", "")
+	querySearch := ctx.Query("query_search", "")
 	sortBy := ctx.Query("sort_by", "")
 	sort := ctx.Query("sort", "")
 
