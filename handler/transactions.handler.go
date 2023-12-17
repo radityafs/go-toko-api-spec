@@ -47,7 +47,7 @@ func GetTopTransactionByShop(ctx *fiber.Ctx) error {
 	Where("shop_id = ?", ctx.Locals("shop_id"))
 
 	if(start_date != "" && end_date != "") {
-		tx.Where("created_at BETWEEN ? AND ?", fmt.Sprintf("%s 00:00:00", start_date), fmt.Sprintf("%s 23:59:59", end_date))
+		tx.Where("created_at BETWEEN CONVERT_TZ(?, '+07:00', '+00:00') AND CONVERT_TZ(?, '+07:00', '+00:00')", fmt.Sprintf("%s 00:00:00", start_date), fmt.Sprintf("%s 23:59:59", end_date))
 	}
 
 
@@ -106,9 +106,9 @@ func GetTransactionsByShop(ctx *fiber.Ctx) error {
 	tx := database.DB.Model(&entity.Sales{}).Where("shop_id = ?", ctx.Locals("shop_id"))
 	
 	if(start_date != "" && end_date != "") {
-		tx.Where("created_at BETWEEN ? AND ?", fmt.Sprintf("%s 00:00:00", start_date), fmt.Sprintf("%s 23:59:59", end_date))
-		txSummary.Where("created_at BETWEEN ? AND ?", fmt.Sprintf("%s 00:00:00", start_date), fmt.Sprintf("%s 23:59:59", end_date))
-		txCount.Where("created_at BETWEEN ? AND ?", fmt.Sprintf("%s 00:00:00", start_date), fmt.Sprintf("%s 23:59:59", end_date))
+		tx.Where("created_at BETWEEN CONVERT_TZ(?, '+07:00', '+00:00') AND CONVERT_TZ(?, '+07:00', '+00:00')", fmt.Sprintf("%s 00:00:00", start_date), fmt.Sprintf("%s 23:59:59", end_date))
+		txSummary.Where("created_at BETWEEN CONVERT_TZ(?, '+07:00', '+00:00') AND CONVERT_TZ(?, '+07:00', '+00:00')", fmt.Sprintf("%s 00:00:00", start_date), fmt.Sprintf("%s 23:59:59", end_date))
+		txCount.Where("created_at BETWEEN CONVERT_TZ(?, '+07:00', '+00:00') AND CONVERT_TZ(?, '+07:00', '+00:00')", fmt.Sprintf("%s 00:00:00", start_date), fmt.Sprintf("%s 23:59:59", end_date))
 	}
 
 	txCount.Count(&response.Pagination.TotalData)
