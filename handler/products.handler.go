@@ -15,7 +15,7 @@ func GetProductsShop(ctx *fiber.Ctx) error {
 	page:= ctx.Query("page", "1")
 	limit := ctx.Query("limit", "10")
 	id_category := ctx.Query("id_category", "")
-	querySearch := ctx.Query("query_search", "")
+	search := ctx.Query("search", "")
 	sortBy := ctx.Query("sort_by", "")
 	sort := ctx.Query("sort", "")
 
@@ -54,6 +54,11 @@ func GetProductsShop(ctx *fiber.Ctx) error {
 	Where("shop_id = ?", ctx.Locals("shop_id"))
 	
 	tx.Count(&response.Pagination.TotalData)
+
+	if(search != "") { 
+		tx.Where("name LIKE ?", fmt.Sprintf("%%%s%%", search))
+		tx.Count(&response.Pagination.TotalData)
+	}
 
 	if(id_category != "") { 
 		tx.Where("category_id = ?", id_category)
