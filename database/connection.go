@@ -3,7 +3,6 @@ package database
 import (
 	"fmt"
 	"os"
-	"time"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -26,9 +25,8 @@ func Init() {
 	host = "165.22.104.10"
 	port = "3306"
 	database = "go_toko"
-	loc, _ := time.LoadLocation("Asia/Jakarta") // handle any errors!
 
-	dsn := username + ":" + password + "@tcp(" + host + ":" + port + ")" + "/" + database + "?charset=utf8mb4&parseTime=True&loc=" + loc.String()
+	dsn := username + ":" + password + "@tcp(" + host + ":" + port + ")" + "/" + database + "?charset=utf8mb4&parseTime=True&loc=Asia%2FJakarta"
 
 	DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Info),
