@@ -51,7 +51,8 @@ func GetProductsShop(ctx *fiber.Ctx) error {
 
 	tx := database.DB.Preload("ProductsCategory").
 	Model(&entity.Product{}).
-	Where("shop_id = ?", ctx.Locals("shop_id"))
+	Where("shop_id = ?", ctx.Locals("shop_id")).
+	Where("quantity > ?", 0)
 	
 	tx.Count(&response.Pagination.TotalData)
 
